@@ -23,8 +23,6 @@ loop do
   total_result[title] = nested_result
   total_price += price * count
 
-  break until title == "0"
-
   puts "#{{title => nested_result}} - цена #{price * count}"
 end
 
