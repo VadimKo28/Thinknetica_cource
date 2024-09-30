@@ -1,6 +1,6 @@
 class Train 
   attr_reader :route
-  attr_accessor :current_speed, :current_state_index, :count_train_units
+  attr_accessor :current_speed, :current_station_index, :count_train_units
 
   def initialize(number, type, count_train_units)
     @number = number 
@@ -8,7 +8,6 @@ class Train
     @count_train_units = count_train_units
     @current_speed = 0
     @route = nil
-    @current_state_index = 0
   end
 
   def up_speed(accelerate)
@@ -37,35 +36,40 @@ class Train
 
   def add_route(route)
     @route = route
-    first_state_route = route.get_all_states[0] 
-    first_state_route.accept_trains(self)
+    @current_station_index = 0
+    current_station.accept_trains(self)
   end
 
   def up_one_station
-    old_state = route.get_all_states[current_state_index]
-    old_state.send_train(self)
-    self.current_state_index += 1
-    new_state = route.get_all_states[current_state_index]
-    new_state.accept_trains(self)
+    return unless next_station
+
+    current_station.send_train(self)
+
+    @current_station_index += 1
+   
+    current_station.accept_trains(self)
   end
 
   def down_one_station
-    old_state = route.get_all_states[current_state_index]
-    old_state.send_train(self)
-    self.current_state_index -= 1
-    new_state = route.get_all_states[current_state_index]
+    return unless previous_station
+
+    current_station.send_train(self)
+    
+    @current_station_index -= 1
+
     new_state.accept_trains(self)
   end
 
-  def current_state
-    route.get_all_states[current_state_index] 
+  def current_station
+    route.get_all_stations[current_station_index] 
   end
 
-  def next_state
-    route.get_all_states[current_state_index + 1] 
+  def next_station
+    route.get_all_stations[current_station_index + 1] 
   end
 
-  def previous_state
-    route.get_all_states[current_state_index - 1] 
+  def previous_station
+    return puts "Предыдущей станции нет" if current_station_index == 0
+    route.get_all_stations[current_station_index - 1] 
   end
 end
