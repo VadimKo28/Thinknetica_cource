@@ -17,7 +17,7 @@ class Route
     puts "Станция #{station.name} удалена"
   end
 
-  def get_all_stations
+  def stations
     [start_station, @intermediate_stations, end_station].flatten
   end
 end
