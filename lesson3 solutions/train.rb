@@ -57,19 +57,19 @@ class Train
     
     @current_station_index -= 1
 
-    new_state.accept_trains(self)
+    current_station.accept_trains(self)
   end
 
   def current_station
-    route.get_all_stations[current_station_index] 
+    route.stations[current_station_index] 
   end
 
   def next_station
-    route.get_all_stations[current_station_index + 1] 
+    route.stations[current_station_index + 1] 
   end
 
   def previous_station
     return puts "Предыдущей станции нет" if current_station_index == 0
-    route.get_all_stations[current_station_index - 1] 
+    route.stations[current_station_index - 1] 
   end
 end
