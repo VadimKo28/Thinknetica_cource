@@ -20,7 +20,6 @@ class Train
     @wagons = []
     @number = number
     self.class.all << self 
-    puts "Счётчик колличества экземпляров увеличен с #{self.class.instances} на #{register_instance}"
   end
 
   def add_route(route)

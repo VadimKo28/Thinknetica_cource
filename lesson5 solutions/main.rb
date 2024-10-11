@@ -1,6 +1,6 @@
-require_relative 'interface.rb'
+require_relative "interface.rb"
 
-puts "Выберите действие:\n
+print_interface = "Выберите действие:\n
       1. Создать станцию\n
       2. Создать поезд\n
       3. Создать маршрут\n
@@ -12,10 +12,14 @@ puts "Выберите действие:\n
       9. Переместить поезд по маршруту\n
       10. Просмотреть список станций\n
       11. Просмотреть список поездов на станции\n
+      12. Найти поезд по номеру\n
+      13. Показать все станции\n
+      14. Установить производителя поезда\n
+      15. Показать производителя поезда\n
        0. Выход"
 
-user_input = gets.chomp.to_i
+puts print_interface
 
-interface = Interface.new 
+interface = Interface.new
 
-interface.choose_user(user_input)
+interface.choose_user(print_interface)
