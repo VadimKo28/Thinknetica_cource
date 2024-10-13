@@ -3,7 +3,7 @@ class Route
 
   include InstanceCounter
 
-  attr_reader :start_station, :end_station
+  attr_reader :start_station, :end_station, :intermediate_stations
 
   def self.all
     @objects
@@ -16,12 +16,12 @@ class Route
     self.class.all << self 
   end
 
-  def add_intermediate_states(station)
+  def add_intermediate_stations(station)
     @intermediate_stations << station
     puts "Добавлена промежуточная станция #{station}"
   end
 
-  def delete_intermediate_station(station)
+  def delete_intermediate_stations(station)
     @intermediate_stations.delete(station)
     puts "Станция #{station.name} удалена"
   end

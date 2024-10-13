@@ -20,6 +20,7 @@ class Train
     @wagons = []
     @number = number
     self.class.all << self 
+    register_instance
   end
 
   def add_route(route)

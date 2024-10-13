@@ -10,7 +10,7 @@ require_relative "cargo_wagon.rb"
 require_relative "passenger_wagon.rb"
 
 class Interface
-  attr_reader :route, :train, :trains
+  attr_reader :route, :trains
 
   def initialize
     @trains = []
@@ -53,7 +53,7 @@ class Interface
   end
 
   def create_train
-    puts "Придумайте номер поезда"
+    puts "Введите № поезда цифрами"
 
     number_train_input = gets.to_i
 
@@ -61,13 +61,16 @@ class Interface
 
     type_train_input = gets.to_i
 
-    @train = if type_train_input == 0
-        @trains << PassengerTrain.new(number_train_input)
-      elsif type_train_input == 1
-        @trains << CargoTrain.new(number_train_input)
-      else
-        return puts "Некорректное значение, введите 0 или 1"
-      end
+    train = case type_train_input
+    when 0
+      PassengerTrain.new(number_train_input)
+    when 1
+      CargoTrain.new(number_train_input)
+    else
+      return puts "Некорректное значение, введите 0 или 1"
+    end
+
+    @trains << train 
 
     puts "Поезд создан #{train}"
   end
@@ -88,36 +91,65 @@ class Interface
   end
 
   def add_station
-    puts "Введите название станции которую нужно добавить"
+    puts "Введите название промежуточной станции которую нужно добавить"
+
+    station_name = gets.chomp.to_s
 
     return puts "Создайте маршрут" if route.nil?
 
-    route.add_intermediate_states(gets.chomp.to_s)
+    station = Station.new(station_name)
+
+    route.add_intermediate_stations(station)
   end
 
   def remove_station
-    puts "Введите название станции которую нужно убрать"
+    puts "Убрать можно только промежуточную станцию, введите название"
 
-    route.remove_intermediate_states(gets.chomp.to_s)
+    name_station = gets.chomp.to_s
+    
+    find_station = route.intermediate_stations.find {|station| station.name == name_station}
+
+    return puts "Такой станции нет" if find_station.nil?
+
+    route.delete_intermediate_stations(find_station)
   end
 
   def add_rout_to_train
+    puts "Введите № поезда которому добавить маршрут"
+
+    number_train = gets.to_i 
+
+    train = find_train(number_train)
+
+    return puts "Такого поезда нет" if train.nil?
+
     train.add_route(route)
+
+    puts "Маршрут добавлен"
   end
 
   def add_wagon_to_train
     puts "Создайте вагон. Для этого укажите его тип \n
          0 - грузовой\n
          1 - пассажирский"
-    user_input = gets.to_i
+    wagon_type = gets.to_i
 
-    wagon = if user_input == 0
+    wagon = case wagon_type 
+      when 0
         CargoWagon.new
-      elsif user_input == 0
+      when 1
         PassengerWagon.new
       else
         return "такого значения нет"
       end
+
+    puts "Введите номер поезда которому хотите прицепить вагон"
+
+    number_train = gets.to_i 
+
+    train = find_train(number_train)
+
+    return puts "Нет такого поезда" if train.nil?  
 
     train.add_wagon(wagon)
   end
@@ -129,6 +161,14 @@ class Interface
   end
 
   def move_train_to_route
+    puts 'Какой поезд хотите переместить, введите номер'
+
+    number_train = gets.to_i 
+
+    train = find_train(number_train)
+
+    return puts "Такого поезда нет" if train.nil?
+
     puts 'Переместить поезд по маршруту:\
           0 - На станцию вперёд\
           1 - На станцию назад'
@@ -144,16 +184,24 @@ class Interface
   end
 
   def route_stations
-    route.stations
+    return puts "Маршрут отсутствует" if route.nil?
+    puts "Станции маршрута #{route.stations}"
   end
 
   def station_trains
     puts "Поезда какой станции хотите посмотреть? укажите цифру"
-    route.stations.each_with_index do |station, index|
+
+    all_stations = Station.all
+
+    number_variant_user = gets.to_i
+
+    return puts "Станций нет" if all_stations.empty?
+
+    all_stations.each_with_index do |station, index|
       puts "#{index} - #{station}"
     end
 
-    route.stations[gets.to_i].trains
+    puts "Поезда станции - #{all_stations[number_variant_user].trains}"
   end
 
   def search_train
