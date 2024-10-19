@@ -20,9 +20,9 @@ class Train
     @route = nil
     @wagons = []
     @number = number.to_s
-    self.class.all << self 
+    self.class.all << self
+    validate! 
     register_instance
-    validate!
   end
 
   def add_route(route)

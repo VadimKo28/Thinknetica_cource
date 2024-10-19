@@ -22,4 +22,4 @@ print_interface = "Выберите действие:\n
 
 interface = Interface.new
 
-interface.choose_user(print_interface)
+interface.choose_user(print_interface)   

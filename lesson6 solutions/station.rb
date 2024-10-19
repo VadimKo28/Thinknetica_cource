@@ -38,7 +38,7 @@ class Station
   private 
 
   def validate!
-    raise "Name has invalid format" if name !~ NAME_FORMAT
+    raise StandardError, "Name has invalid format" if name !~ NAME_FORMAT
     true
   end
 

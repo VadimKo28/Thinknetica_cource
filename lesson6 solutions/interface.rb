@@ -42,54 +42,54 @@ class Interface
   private
 
   def create_station
-    puts "Введите название станции русскими буквами"
+    puts "Введите название станции русскими буквами, не менее 3х символов"
 
     name_station = gets.chomp.to_s
 
     Station.new(name_station)
 
     puts "Станция #{name_station} создана"
+
+  rescue StandardError => e 
+    puts "Exception #{e.message}\n "
+    
+    retry
   end
 
-  def create_train
-    attempts = 0
-    
-    begin
-      message = <<~MESSAGE 
-                  Введите № поезда
-                  Три буквы или цифры в любом порядке,
-                  необязательный дефис (может быть, а может нет)
-                  и еще 2 буквы или цифры после дефиса
-                MESSAGE
+  def create_train    
+    message = <<~MESSAGE 
+                Введите № поезда
+                Три буквы или цифры в любом порядке,
+                необязательный дефис (может быть, а может нет)
+                и еще 2 буквы или цифры после дефиса
+              MESSAGE
 
-      puts message          
+    puts message          
 
-      number_train_input = gets.chomp.to_s
+    number_train_input = gets.chomp.to_s
 
-      puts "Укажите тип поезда: 0 - Пассажиский, 1 - Гузовой"
+    puts "Укажите тип поезда: 0 - Пассажиский, 1 - Гузовой"
 
-      type_train_input = gets.to_i
+    type_train_input = gets.to_i
 
-      train = case type_train_input
-      when 0
-        PassengerTrain.new(number_train_input)
-      when 1
-        CargoTrain.new(number_train_input)
-      else
-        return puts "Некорректное значение, введите 0 или 1"
-      end
 
-      @trains << train 
-
-      puts "Поезд создан #{train}"
-
-    rescue StandardError => e 
-      attempts += 1
-
-      puts "Exception #{e.message}\n "
-       
-      retry if attempts <= 1
+    train = case type_train_input
+    when 0
+      PassengerTrain.new(number_train_input)
+    when 1
+      CargoTrain.new(number_train_input)
+    else
+      return puts "Некорректное значение, введите 0 или 1"
     end
+
+    @trains << train 
+
+    puts "Поезд создан #{train}"
+
+  rescue StandardError => e 
+    puts "Exception #{e.message}\n "
+    
+    retry
   end
 
   def create_route
