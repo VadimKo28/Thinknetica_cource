@@ -35,6 +35,12 @@ class Station
     false
   end
 
+  def all_trains
+    @trains.each do |train|
+      train 
+    end
+  end
+
   private 
 
   def validate!

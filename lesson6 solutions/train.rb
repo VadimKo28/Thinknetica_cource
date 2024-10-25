@@ -5,7 +5,7 @@ class Train
   include ManufacturedCompany
   include InstanceCounter
 
-  attr_reader :number
+  attr_reader :number, :wagons
 
   def self.find(number)
     @objects.find {|train| train.number == number}
@@ -32,7 +32,8 @@ class Train
   end
 
   def add_wagon(wagon)
-    wagons << wagon     
+    wagons << wagon
+    puts "Вагон добавлен"     
   end   
 
   def remove_wagon(wagon)
@@ -65,9 +66,11 @@ class Train
     false
   end
 
-  # Делаем wagons доступным только в подклассах, извне не используем(по крайней мере в условии про это не сказано)
-  protected
-  attr_reader :wagons
+  def all_wagons
+    @wagons.each do |wagon|
+      wagon 
+    end
+  end
 
   # Все методы ниже пользовательским интерфейсом пока не используются
   private    
