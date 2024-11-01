@@ -1,21 +1,20 @@
-class Station 
-  #название станции может иметь только русские буквы не менее 3х символов 
+class Station
+  include InstanceCounter
+
   NAME_FORMAT = /^([А-Яа-яЁё]{3,})$/
 
   @objects = []
 
-  include InstanceCounter
-
   attr_reader :name, :trains
 
-  def self.all 
+  def self.all
     @objects
   end
 
   def initialize(name)
     @name = name
     @trains = []
-    self.class.all << self 
+    self.class.all << self
     validate!
   end
 
@@ -31,21 +30,20 @@ class Station
 
   def valid?
     validate!
-  rescue
+  rescue StandardError
     false
   end
 
   def all_trains
     @trains.each do |train|
-      train 
     end
   end
 
-  private 
+  private
 
   def validate!
-    raise StandardError, "Name has invalid format" if name !~ NAME_FORMAT
+    raise StandardError, 'Name has invalid format' if name !~ NAME_FORMAT
+
     true
   end
-
 end

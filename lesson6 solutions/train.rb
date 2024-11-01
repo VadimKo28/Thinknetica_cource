@@ -1,18 +1,21 @@
-class Train 
-  NUMBER_TRAIN_FORMAT = /^[А-Яа-яA-Za-z0-9]{3}-?[А-Яа-яA-Za-z0-9]{2}$|^([A-Za-z0-9]{5})$/
-  @objects = []
-  
+class Train
   include ManufacturedCompany
   include InstanceCounter
 
+  NUMBER_TRAIN_FORMAT = /^[А-Яа-яA-Za-z0-9]{3}-?[А-Яа-яA-Za-z0-9]{2}$|^([A-Za-z0-9]{5})$/
+
+  @objects = []
+
   attr_reader :number, :wagons
 
-  def self.find(number)
-    @objects.find {|train| train.number == number}
-  end
+  class << self
+    def find(number)
+      @objects.find { |train| train.number == number }
+    end
 
-  def self.all
-    @objects
+    def all
+      @objects
+    end
   end
 
   def initialize(number)
@@ -21,7 +24,7 @@ class Train
     @wagons = []
     @number = number.to_s
     self.class.all << self
-    validate! 
+    validate!
     register_instance
   end
 
@@ -33,8 +36,8 @@ class Train
 
   def add_wagon(wagon)
     wagons << wagon
-    puts "Вагон добавлен"     
-  end   
+    puts 'Вагон добавлен'
+  end
 
   def remove_wagon(wagon)
     wagons.delete(wagon)
@@ -46,7 +49,7 @@ class Train
     current_station.send_train(self)
 
     @current_station_index += 1
-   
+
     current_station.accept_trains(self)
   end
 
@@ -54,7 +57,7 @@ class Train
     return unless previous_station
 
     current_station.send_train(self)
-    
+
     @current_station_index -= 1
 
     current_station.accept_trains(self)
@@ -62,18 +65,18 @@ class Train
 
   def valid?
     validate!
-  rescue
+  rescue StandardError
     false
   end
 
   def all_wagons
     @wagons.each do |wagon|
-      wagon 
     end
   end
 
   # Все методы ниже пользовательским интерфейсом пока не используются
-  private    
+  private
+
   attr_reader :route
   attr_accessor :current_speed, :current_station_index
 
@@ -90,16 +93,18 @@ class Train
   end
 
   def next_station
-    route.stations[current_station_index + 1] 
+    route.stations[current_station_index + 1]
   end
 
   def previous_station
-    return puts "Предыдущей станции нет" if current_station_index == 0
-    route.stations[current_station_index - 1] 
+    return puts 'Предыдущей станции нет' if current_station_index == 0
+
+    route.stations[current_station_index - 1]
   end
 
   def validate!
-    raise StandardError, "Number has invalid format" if number.to_s !~ NUMBER_TRAIN_FORMAT
+    raise StandardError, 'Number has invalid format' if number.to_s !~ NUMBER_TRAIN_FORMAT
+
     true
   end
 end

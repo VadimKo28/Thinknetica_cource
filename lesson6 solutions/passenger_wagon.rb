@@ -1,8 +1,7 @@
-class PassengerWagon < Wagon 
-
+class PassengerWagon < Wagon
   attr_reader :type
   attr_accessor :place_count, :taked_places
-  
+
   def initialize(place_count)
     @place_count = place_count
     @type = 'passenger'
@@ -15,11 +14,11 @@ class PassengerWagon < Wagon
     self.taked_places += 1
   end
 
-  private 
+  private
 
   def validation!
-    raise StandardError, "У вагона не может быть 0 мест" if place_count.to_i <= 0
+    raise StandardError, 'У вагона не может быть 0 мест' if place_count.to_i <= 0
+
     true
   end
-
 end

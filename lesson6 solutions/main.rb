@@ -1,4 +1,4 @@
-require_relative "interface.rb"
+require_relative 'interface'
 
 print_interface = "Выберите действие:\n
       1. Создать станцию\n
@@ -22,8 +22,6 @@ print_interface = "Выберите действие:\n
       19. Показать все вагоны поезда при помощи each\n
        0. Выход"
 
-# puts print_interface
-
 interface = Interface.new
 
-interface.choose_user(print_interface)   
+interface.choose_user(print_interface)

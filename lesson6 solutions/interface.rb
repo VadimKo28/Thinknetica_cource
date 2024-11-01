@@ -11,6 +11,15 @@ require_relative "passenger_wagon.rb"
 require 'byebug'
 
 class Interface
+  ACTIONS = {
+        1 => "create_station", 2 => "create_train", 3 => "create_route", 4 => "add_station",
+        5 => "remove_station", 6 => "add_rout_to_train", 7 => "add_wagon_to_train",
+        8 => "remove_wagon_to_train", 9 => "move_train_to_route", 10 => "route_stations", 11 => "station_trains",
+        12 => "search_train", 13 => "all_stations", 14 => "set_manufactured_train", 15 => "get_manufactured_train",
+        16 => "take_place", 17 => "take_volume", 18 => "fetch_all_train", 19 => "fetch_all_wagons",
+        0 => "exit"
+      }
+
   attr_reader :route, :trains
 
   def initialize
@@ -25,16 +34,7 @@ class Interface
 
       user_input = gets.to_i
 
-      actions = {
-        1 => "create_station", 2 => "create_train", 3 => "create_route", 4 => "add_station",
-        5 => "remove_station", 6 => "add_rout_to_train", 7 => "add_wagon_to_train",
-        8 => "remove_wagon_to_train", 9 => "move_train_to_route", 10 => "route_stations", 11 => "station_trains",
-        12 => "search_train", 13 => "all_stations", 14 => "set_manufactured_train", 15 => "get_manufactured_train",
-        16 => "take_place", 17 => "take_volume", 18 => "fetch_all_train", 19 => "fetch_all_wagons",
-        0 => "exit"
-      }
-
-      eval(actions[user_input])
+      eval(ACTIONS[user_input])
 
       break if user_input == 0
     end
@@ -54,7 +54,7 @@ class Interface
     puts "Станция #{name_station} создана"
 
   rescue StandardError => e 
-    puts "Exception #{e.message}\n "
+    puts "Exception #{e.message}\n"
     
     retry
   end
@@ -75,31 +75,30 @@ class Interface
 
     type_train_input = gets.to_i
 
+    train_type = { 
+      0 => PassengerTrain.new(number_train_input), 
+      1 => CargoTrain.new(number_train_input) 
+    }
+   
+    train = train_type[type_train_input]
 
-    train = case type_train_input
-    when 0
-      PassengerTrain.new(number_train_input)
-    when 1
-      CargoTrain.new(number_train_input)
-    else
-      return puts "Некорректное значение, введите 0 или 1"
-    end
+    return puts "Некорректное значение, введите 0 или 1" if train.nil?
 
     @trains << train 
 
-    puts "Поезд создан #{train}"
+    puts "Поезд создан"
 
   rescue StandardError => e 
-    puts "Exception #{e.message}\n "
+    puts "Exception #{e.message}(Невалидное название для поезда)\n"
     
     retry
   end
 
   def create_route
-    message = <<~message
+    message = <<~MESSAGE
                 Для создания маршрута нужны начальная и конечная станции
                 Введите название для начальной, P.S. только русскими буквами
-              message
+              MESSAGE
 
     puts message      
 
@@ -207,11 +206,13 @@ class Interface
     puts 'Переместить поезд по маршруту:\
           0 - На станцию вперёд\
           1 - На станцию назад'
+
     user_input = gets.to_i
 
-    if user_input == 0
+    case user_input
+    when 0
       train.up_one_station
-    elsif user_input == 1
+    when 1
       train.down_one_station
     else
       return "Такого значения нет"
@@ -224,13 +225,13 @@ class Interface
   end
 
   def station_trains
-    puts "Поезда какой станции хотите посмотреть? укажите цифру"
-
     all_stations = Station.all
 
-    number_variant_user = gets.to_i
-
     return puts "Станций нет" if all_stations.empty?
+
+    puts "Поезда какой станции хотите посмотреть? укажите цифру"
+
+    number_variant_user = gets.to_i
 
     all_stations.each_with_index do |station, index|
       puts "#{index} - #{station}"
@@ -246,7 +247,7 @@ class Interface
 
     train = find_train(number_train)
 
-    p train.nil? ? nil : "Поезд найден #{train}"
+    puts train.nil? ? nil : "Поезд найден #{train}"
   end
 
   def all_stations
@@ -311,26 +312,24 @@ class Interface
 
     volume = gets.to_i
 
-    byebug    
-
     train.wagons.first.take_volume(volume)
 
     puts "В вагоне занято #{volume} кубаметра"
   end
 
-  def exit
-    return "Вы вышли"
-  end
-
   def find_pasenger_train(number_train)
     train = find_train(number_train) 
+
     return puts "Это не пассажирский поезд, у него нельзя занять место в вагоне" if train.class == CargoTrain
+
     train
   end
 
   def find_cargo_train(number_train)
     train = find_train(number_train) 
+
     return puts "Это не грузовой поезд, у него нельзя занять объём в вагоне" if train.class == PassengerTrain
+
     train
   end
 
@@ -380,6 +379,7 @@ class Interface
     station = find_station(input_name)
 
     puts "Поезда станции #{station.name}"
+
     puts station.all_trains
   end
 
@@ -393,6 +393,7 @@ class Interface
     return puts "Нет такого поезда" if train.nil?
 
     puts "Вагоны"
+    
     puts train.all_wagons
   end
 end
