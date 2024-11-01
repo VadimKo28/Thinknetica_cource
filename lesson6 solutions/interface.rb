@@ -314,7 +314,7 @@ class Interface
 
     train.wagons.first.take_volume(volume)
 
-    puts "В вагоне занято #{volume} кубаметра"
+    puts "В вагоне занято #{volume} кубометра"
   end
 
   def find_pasenger_train(number_train)
@@ -359,7 +359,7 @@ class Interface
 
   def create_cargo_wagon
     begin 
-      puts "Введите колличество кубаметров объёма вагона"
+      puts "Введите колличество кубометров объёма вагона"
     
       volume_count = gets.to_i
     
