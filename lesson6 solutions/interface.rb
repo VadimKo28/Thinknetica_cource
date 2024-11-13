@@ -1,5 +1,7 @@
-require_relative "manufactured_company.rb"
-require_relative "instance_counter.rb"
+require_relative "module/manufactured_company.rb"
+require_relative "module/instance_counter.rb"
+require_relative "module/accessors.rb"
+require_relative "module/validation.rb"
 require_relative "station.rb"
 require_relative "route.rb"
 require_relative "train.rb"
@@ -8,6 +10,7 @@ require_relative "passenger_train.rb"
 require_relative "wagon.rb"
 require_relative "cargo_wagon.rb"
 require_relative "passenger_wagon.rb"
+
 require 'byebug'
 
 class Interface
@@ -16,7 +19,7 @@ class Interface
         5 => "remove_station", 6 => "add_rout_to_train", 7 => "add_wagon_to_train",
         8 => "remove_wagon_to_train", 9 => "move_train_to_route", 10 => "route_stations", 11 => "station_trains",
         12 => "search_train", 13 => "all_stations", 14 => "set_manufactured_train", 15 => "get_manufactured_train",
-        16 => "take_place", 17 => "take_volume", 18 => "fetch_all_train", 19 => "fetch_all_wagons",
+        16 => "take_place", 17 => "take_volume", 18 => "fetch_all_train", 19 => "fetch_all_wagons", 20 => "change_number_train", 21 => "fetch_history_number_train",
         0 => "exit"
       }
 
@@ -71,14 +74,14 @@ class Interface
 
     number_train_input = gets.chomp.to_s
 
-    puts "Укажите тип поезда: 0 - Пассажиский, 1 - Гузовой"
-
-    type_train_input = gets.to_i
-
     train_type = { 
       0 => PassengerTrain.new(number_train_input), 
       1 => CargoTrain.new(number_train_input) 
     }
+
+    puts "Укажите тип поезда: 0 - Пассажиский, 1 - Гузовой"
+
+    type_train_input = gets.to_i
    
     train = train_type[type_train_input]
 
@@ -89,7 +92,7 @@ class Interface
     puts "Поезд создан"
 
   rescue StandardError => e 
-    puts "Exception #{e.message}(Невалидное название для поезда)\n"
+    puts "#{e.message}(Невалидное название для поезда)\n"
     
     retry
   end
@@ -115,6 +118,11 @@ class Interface
     @route = Route.new(start_station, end_station)
 
     puts "Маршрут со станциями #{route.stations} создан"
+
+  rescue StandardError => e 
+    puts "Exception #{e.message}\n"
+    
+    retry
   end
 
   def add_station
@@ -395,5 +403,35 @@ class Interface
     puts "Вагоны"
     
     puts train.all_wagons
+  end
+
+  def change_number_train 
+    puts "Введите № поезда, номер которого поменять"
+
+    number_train = gets.chomp.to_s
+
+    train = find_train(number_train)
+
+    return puts "Нет такого поезда" if train.nil?
+
+    puts "Введите новый номер"
+
+    new_number_train = gets.chomp.to_s
+
+    train.number = new_number_train
+
+    puts "Готово! Новый номер поезда #{train.number}"
+  end
+
+  def fetch_history_number_train 
+    puts "Введите № поезда, историю номеров которого показать"
+
+    number_train = gets.chomp.to_s
+
+    train = find_train(number_train)
+
+    return puts "Нет такого поезда" if train.nil?
+
+    puts "Номера которые присваивались поезду #{train.number_history}"
   end
 end

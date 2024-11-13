@@ -1,12 +1,16 @@
 class Train
   include ManufacturedCompany
   include InstanceCounter
+  include Validation
+  extend Accessors
 
   NUMBER_TRAIN_FORMAT = /^[А-Яа-яA-Za-z0-9]{3}-?[А-Яа-яA-Za-z0-9]{2}$|^([A-Za-z0-9]{5})$/
 
   @objects = []
 
-  attr_reader :number, :wagons
+  attr_accessor_with_history :number
+  attr_reader :wagons
+  validate :number, :format, NUMBER_TRAIN_FORMAT
 
   class << self
     def find(number)
@@ -23,8 +27,8 @@ class Train
     @route = nil
     @wagons = []
     @number = number.to_s
+    self.validate!
     self.class.all << self
-    validate!
     register_instance
   end
 
@@ -102,9 +106,4 @@ class Train
     route.stations[current_station_index - 1]
   end
 
-  def validate!
-    raise StandardError, 'Number has invalid format' if number.to_s !~ NUMBER_TRAIN_FORMAT
-
-    true
-  end
 end

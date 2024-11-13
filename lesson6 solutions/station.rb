@@ -1,11 +1,14 @@
 class Station
   include InstanceCounter
+  include Validation
 
   NAME_FORMAT = /^([А-Яа-яЁё]{3,})$/
 
   @objects = []
 
   attr_reader :name, :trains
+  validate :name, :presence
+  validate :name, :format, NAME_FORMAT
 
   def self.all
     @objects
@@ -14,8 +17,8 @@ class Station
   def initialize(name)
     @name = name
     @trains = []
+    self.validate!
     self.class.all << self
-    validate!
   end
 
   def accept_trains(train)
@@ -29,7 +32,7 @@ class Station
   end
 
   def valid?
-    validate!
+    self.validate!
   rescue StandardError
     false
   end
@@ -39,11 +42,4 @@ class Station
     end
   end
 
-  private
-
-  def validate!
-    raise StandardError, 'Name has invalid format' if name !~ NAME_FORMAT
-
-    true
-  end
 end

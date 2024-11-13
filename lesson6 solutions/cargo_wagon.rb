@@ -1,4 +1,5 @@
 class CargoWagon < Wagon
+
   attr_reader :type
 
   attr_accessor :volume_count, :taked_volumes
