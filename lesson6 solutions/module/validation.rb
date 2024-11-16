@@ -18,18 +18,19 @@ module Validation
   module InstanceMethods
     def validate!
       self.class.validations.each do |validation|
+        
         attr_name = validation[:attr_name]
         validation_type = validation[:validation_type]
         option = validation[:option]
     
         value = instance_variable_get("@#{attr_name}".to_sym)
-
+       
         if instance_variable_defined?("@#{attr_name}".to_sym)
           case validation_type
           when :presence
             validate_presence(value, attr_name) 
           when :type 
-            validate_type(attr_name, option)
+            validate_type(value, attr_name, option)
           when :format 
             validate_format(value, attr_name, option)
           end
@@ -48,15 +49,15 @@ module Validation
 
     private 
 
-    def validate_presence(value, attr_name)      
+    def validate_presence(value, attr_name)    
       if value.nil? || value.empty? 
          raise StandardError, "#{attr_name.capitalize} can't be blank"
       end
     end
 
-    def validate_type(attr_name, option)
+    def validate_type(value, attr_name, option)
       unless self.class == option
-        raise TypeError, "Attribute #{attr_name} Expected #{option} class, got #{self.class}"
+        raise TypeError, "Attribute #{attr_name} Expected #{option} class, got #{value.class}"
       end
     end
 

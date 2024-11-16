@@ -190,7 +190,7 @@ class Interface
     train = find_train(number_train)
 
     return puts "Нет такого поезда" if train.nil?  
-
+    
     train.add_wagon(wagon)
   end
 
@@ -358,7 +358,7 @@ class Interface
       place_count = gets.to_i
       
       PassengerWagon.new(place_count)
-    rescue StandardError => e 
+    rescue TypeError => e 
       puts e.message
 
       retry
@@ -372,7 +372,7 @@ class Interface
       volume_count = gets.to_i
     
       CargoWagon.new(volume_count)
-    rescue StandardError => e 
+    rescue TypeError => e 
       puts e.message
 
       retry

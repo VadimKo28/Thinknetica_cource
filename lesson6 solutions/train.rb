@@ -1,7 +1,6 @@
 class Train
   include ManufacturedCompany
   include InstanceCounter
-  include Validation
   extend Accessors
 
   NUMBER_TRAIN_FORMAT = /^[А-Яа-яA-Za-z0-9]{3}-?[А-Яа-яA-Za-z0-9]{2}$|^([A-Za-z0-9]{5})$/
@@ -10,7 +9,6 @@ class Train
 
   attr_accessor_with_history :number
   attr_reader :wagons
-  validate :number, :format, NUMBER_TRAIN_FORMAT
 
   class << self
     def find(number)
@@ -27,7 +25,7 @@ class Train
     @route = nil
     @wagons = []
     @number = number.to_s
-    self.validate!
+    validate!
     self.class.all << self
     register_instance
   end
