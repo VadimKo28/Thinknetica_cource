@@ -1,4 +1,4 @@
-class User
+class Dealer
   include CalculateCards
 
   attr_accessor :cash, :cards
@@ -7,4 +7,5 @@ class User
     @cash = 100
     @cards = []
   end
+
 end

@@ -1,0 +1,13 @@
+GEM
+  specs:
+    byebug (11.1.3)
+
+PLATFORMS
+  ruby
+  x86_64-linux
+
+DEPENDENCIES
+  byebug
+
+BUNDLED WITH
+   2.5.17

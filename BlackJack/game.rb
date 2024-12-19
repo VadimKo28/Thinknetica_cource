@@ -1,20 +1,26 @@
-class Game  
+class Game
+  attr_accessor :status, :bank
+  attr_reader :player1, :player2, :cards
 
-  def initialize(player1, player2) 
-    @game_bank = 0
-    @cards = []
+  def initialize(player1, player2, cards)
+    @bank = 0
+    @cards = cards
+    @player1 = player1
+    @player2 = player2
+    give_gards
+    place_a_bet
   end
 
-  def start_game
+  def give_gards
+    2.times do
+      player1.cards << cards.shift
+      player2.cards << cards.shift
+    end
   end
 
-  def end_game 
-  end 
-  
-  def count_points
+  def place_a_bet
+    player1.cash -= 10
+    player2.cash -= 10
+    self.bank += 20
   end
-
-  def interface
-  end
-
 end
