@@ -1,9 +1,9 @@
 class Interface
-  attr_accessor :game_status
+  attr_accessor :game_status, :game
 
-  def initialize
-    @user = User.new
-    @dealer = Dealer.new
+  def initialize(user, dealer)
+    @user = user
+    @dealer = dealer
     @cards_deck = Cards.new.deck_of_cards
     @game = Game.new(user, dealer, cards_deck)
     @current_step = 'user'
@@ -14,7 +14,7 @@ class Interface
 
   def choose_player(choose_print)
     loop do
-      break open_cards if dealer.cards.size == 3 && dealer.cards.size == 3
+      break open_cards if dealer.cards.size == 3 && user.cards.size == 3
 
       if current_step == 'user'
         puts choose_print
@@ -25,26 +25,42 @@ class Interface
       end
 
       self.current_step = current_step == 'user' ? 'dealer' : 'user'
-
     end
   end
 
-  def print_result_game
+  def result_game
     dealer_points = dealer.total_points(dealer.cards)
     user_points = user.total_points(user.cards)
 
-    win = if user_points == dealer_points
-      "Ничья, у обоих по #{user_points} очков"
-    elsif (user_points > 21) && (dealer_points > 21)
-      "Никто не выйграл, у обоих перебор очков, у вас - #{user_points}, у диллера - #{dealer_points}"
+    puts "Ваши карты #{user.cards}"
+    puts "Карты диллера#{dealer.cards}\n\n"
+
+    win = if (user_points > 21) && (dealer_points > 21)
+      game.bank -= 20
+      user.cash += 10
+      dealer.cash += 10
+      "Никто не выйграл, у обоих перебор очков, у вас - #{user_points}, у диллера - #{dealer_points}. Ваш остаток #{user.cash}$"
+    elsif  user_points == dealer_points
+      game.bank -= 20
+      user.cash += 10
+      dealer.cash += 10
+      "Ничья, у обоих по #{user_points} очков. Ваш остаток #{user.cash}$"
     elsif user_points > 21
-      "Перебор, вы проиграли - #{user_points}"
+      dealer.cash += game.bank
+      game.bank -= 20
+      "Перебор, вы проиграли - #{user_points} очков. Ваш остаток #{user.cash}$"
     elsif user_points > dealer_points
-      "Вы выйграли, у вас #{user_points} очков, у диллера #{dealer_points} очков"
+      user.cash += game.bank
+      game.bank -= 20
+      "Вы выйграли, у вас #{user_points} очков, у диллера #{dealer_points} очков. Ваш остаток #{user.cash}$"
     elsif dealer_points > 21
-      "Вы выйграли, у диллера перебор - #{dealer_points}"
+      user.cash += game.bank
+      game.bank -= 20
+      "Вы выйграли, у диллера перебор - #{dealer_points} очков. Ваш остаток #{user.cash}$"
     elsif dealer_points > user_points
-      "Вы проиграли, у диллера #{dealer_points} очков, у вас #{user_points} очков"
+      dealer.cash += game.bank
+      game.bank -= 20
+      "Вы проиграли, у диллера #{dealer_points} очков, у вас #{user_points} очков. Ваш остаток #{user.cash}$"
     end
 
     puts win
@@ -52,10 +68,20 @@ class Interface
   end
 
   private
-  attr_accessor :user, :dealer, :cards_deck, :game, :current_step
+  attr_accessor :user, :dealer, :cards_deck, :current_step
 
   def user_step
     user_input = gets.to_i
+
+    if user.cards.size == 3 && user_input == 2
+      puts "Нельзя добавить больше 3х карт, выберите другое действие"
+      self.current_step = 'dealer' #костыль, чтоб в цикле текущий ход сменился снова с диллера на юзера, смотреть 27ю строку
+      return
+    elsif ![1, 2, 3].include?(user_input)
+      puts "Нет такого номера действия, попробуйте ещё раз"
+      self.current_step = 'dealer'
+      return
+    end
 
     eval(ACTIONS[user_input])
   end
@@ -79,28 +105,21 @@ class Interface
     end
 
     puts msg
-    return :next
+    return
   end
 
   def add_card
-    return puts "Нельзя добавить больше 3х карт" if user.cards.size == 3 || dealer.cards.size == 3
-
     case current_step
     when "user"
       user.cards << cards_deck.shift
-      user.total_points(user.cards)
       puts "Вы добавили карту!"
     when "dealer"
       dealer.cards << cards_deck.shift
-      dealer.total_points(dealer.cards)
       puts "Диллер добавил карту!"
     end
   end
 
   def open_cards
-    puts "Карты диллера #{dealer.cards}"
-    puts "Ваши карты #{user.cards}"
     self.game_status = 'stop'
   end
-
 end
